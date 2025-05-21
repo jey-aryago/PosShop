@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>PosShop Login</title>
+  <link rel="icon" href="favicon.png" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --dark-bg: #0a0b0e;
+      --dark-secondary: #1a1c20;
+      --light-accent: #ffffff;
+      --primary-color: #4f46e5;
+      --secondary-color: #818cf8;
+      --success-color: #22c55e;
+      --card-bg: rgba(26, 28, 32, 0.95);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--dark-bg);
+      color: var(--light-accent);
+      font-family: 'Inter', Arial, sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background Elements */
+    .background-animations {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .grid {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    .orb {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(150px);
+      opacity: 0.15;
+    }
+
+    .orb-1 {
+      background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+      top: -200px;
+      left: -200px;
+    }
+
+    .orb-2 {
+      background: radial-gradient(circle, var(--secondary-color) 0%, transparent 70%);
+      bottom: -200px;
+      right: -200px;
+    }
+
+    /* Navigation Styles */
+    .nav-container {
+      background: linear-gradient(to right, rgba(26, 28, 32, 0.95), rgba(31, 33, 37, 0.95));
+      margin: 20px;
+      border-radius: 20px;
+      padding: 5px;
+      box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-inner {
+      background: rgba(20, 22, 25, 0.5);
+      border-radius: 15px;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .site-logo {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--light-accent);
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .site-logo:hover {
+      color: var(--light-accent);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-icon::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    /* Form Styles */
+    .flip-box {
+      display: none;
+      width: 400px;
+      perspective: 1000px;
+      margin: 40px auto;
+    }
+
+    .flip-box.show {
+      display: block;
+    }
+
+    .flip-box-inner {
+      width: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+
+    .flipped .flip-box-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-box-front, .flip-box-back {
+      position: absolute;
+      width: 100%;
+      backface-visibility: hidden;
+      padding: 30px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .flip-box-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Form Elements */
+    .form-control, .form-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--light-accent);
+      border-radius: 12px;
+      padding: 12px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control:focus, .form-select:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(79, 70, 229, 0.4);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+      color: var(--light-accent);
+    }
+
+    /* Remove dropdown animation */
+    .form-select {
+      transition: none;
+    }
+
+    .form-select option {
+      background: var(--dark-secondary);
+      color: var(--light-accent);
+      padding: 8px;
+      transition: none;
+    }
+
+    /* Override any Bootstrap animations */
+    .form-select,
+    .form-select:focus,
+    .form-select:hover {
+      animation: none !important;
+      transform: none !important;
+    }
+
+    /* Override dropdown animation */
+    .dropdown-menu,
+    .dropdown-menu.show {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+
+    /* Button Styles */
+    .btn {
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-outline-info {
+      border: 1px solid rgba(79, 70, 229, 0.4);
+      background: transparent;
+      color: var(--secondary-color);
+    }
+
+    .btn-outline-info:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: var(--secondary-color);
+      color: var(--light-accent);
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success-color), #4ade80);
+      border: none;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+    }
+
+    /* Password Toggle */
+    .password-toggle {
+      color: var(--light-accent);
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .password-toggle:hover {
+      opacity: 1;
+    }
+
+    /* Position relative for password fields */
+    .password-field {
+      position: relative;
+    }
+
+    .password-field .form-control {
+      padding-right: 40px;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    /* Links */
+    a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: var(--primary-color);
+    }
+
+    /* Checkbox */
+    input[type="checkbox"] {
+      accent-color: var(--primary-color);
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 576px) {
+      .flip-box {
+        width: 90%;
+        margin: 20px auto;
+      }
+
+      .nav-inner {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Elements -->
+  <div class="background-animations">
+    <div class="grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <div class="nav-container">
+    <div class="nav-inner">
+      <a href="index.html" class="site-logo">
+        <div class="logo-icon">
+          <i class="bi bi-shop"></i>
+        </div>
+        <span>PosShop</span>
+      </a>
+      <div class="d-flex gap-3">
+        <a href="index.html" class="btn btn-outline-info">
+          <i class="bi bi-house-door me-2"></i>Home
+        </a>
+        <button class="btn btn-primary" onclick="toggleLogin()">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Login
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="flip-box" id="loginBox" data-aos="fade-up">
+      <div class="flip-box-inner" id="flipInner">
+        <!-- Front - Login Form -->
+        <div class="flip-box-front">
+          <h4 class="mb-4">Welcome Back</h4>
+          <form id="loginForm">
+            <div class="mb-3">
+              <input type="text" id="loginUsername" class="form-control" placeholder="Username" required>
+            </div>
+            <div class="mb-3 password-field">
+              <input type="password" id="loginPassword" class="form-control" placeholder="Password" required>
+              <i class="bi bi-eye password-toggle" onclick="togglePasswordVisibility('loginPassword')"></i>
+            </div>
+            <div class="mb-3">
+              <select id="loginRole" class="form-select" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="d-flex align-items-center gap-2 text-light">
+                <input type="checkbox" id="rememberMe">
+                <span>Remember Me</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
+            <button type="button" class="btn btn-outline-info w-100 mb-3" onclick="flipForm()">Create Account</button>
+            <p class="text-center mb-0">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#forgotModal">Forgot Password?</a>
+            </p>
+          </form>
+        </div>
+
+        <!-- Back - Signup Form -->
+        <div class="flip-box-back">
+          <h4 class="mb-4">Create Account</h4>
+          <form id="signupForm">
+            <div class="mb-3">
+              <input type="text" id="signupUsername" class="form-control" placeholder="New Username" required>
+            </div>
+            <div class="mb-3 password-field">
+              <input type="password" id="signupPassword" class="form-control" placeholder="New Password" required>
+              <i class="bi bi-eye password-toggle" onclick="togglePasswordVisibility('signupPassword')"></i>
+            </div>
+            <div class="mb-3">
+              <select id="signupRole" class="form-select" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100 mb-2">Create Account</button>
+            <button type="button" class="btn btn-outline-info w-100" onclick="flipForm()">Back to Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotModal" tabindex="-1" aria-labelledby="forgotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotModalLabel">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="forgotForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <input type="text" id="forgotUsername" class="form-control" placeholder="Enter your username" required>
+            </div>
+            <div class="mb-3">
+              <input type="password" id="newPassword" class="form-control" placeholder="Enter new password" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-info" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Reset Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+
+    let accounts = [];
+
+    const loginBox = document.getElementById("loginBox");
+    const flipInner = document.getElementById("flipInner");
+
+    function toggleLogin(show = true) {
+      loginBox.classList.toggle("show", show);
+    }
+
+    function flipForm() {
+      loginBox.classList.toggle("flipped");
+    }
+
+    function togglePasswordVisibility(id) {
+      const passwordField = document.getElementById(id);
+      const icon = event.target;
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        icon.classList.replace("bi-eye", "bi-eye-slash");
+      } else {
+        passwordField.type = "password";
+        icon.classList.replace("bi-eye-slash", "bi-eye");
+      }
+    }
+
+    function saveAccounts() {
+      localStorage.setItem("accounts", JSON.stringify(accounts));
+    }
+
+    function loadAccounts() {
+      accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+    }
+
+    window.onload = () => {
+      toggleLogin(true);
+      loadAccounts();
+
+      if (localStorage.getItem("rememberMe") === "true") {
+        document.getElementById("loginUsername").value = localStorage.getItem("rememberedUsername") || "";
+        document.getElementById("loginPassword").value = localStorage.getItem("rememberedPassword") || "";
+        document.getElementById("rememberMe").checked = true;
+      }
+    };
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const username = document.getElementById("loginUsername").value;
+      const password = document.getElementById("loginPassword").value;
+      const role = document.getElementById("loginRole").value;
+      const remember = document.getElementById("rememberMe").checked;
+
+      const found = accounts.find(acc => acc.username === username && acc.password === password && acc.role === role);
+
+      if (found) {
+        if (remember) {
+          localStorage.setItem("rememberMe", "true");
+          localStorage.setItem("rememberedUsername", username);
+          localStorage.setItem("rememberedPassword", password);
+        } else {
+          localStorage.removeItem("rememberMe");
+          localStorage.removeItem("rememberedUsername");
+          localStorage.removeItem("rememberedPassword");
+        }
+
+        if (role === "Admin") window.location.href = "admin-dashboard.html";
+        else if (role === "Manager") window.location.href = "manager-dashboard.html";
+        else window.location.href = "user-dashboard.html";
+      } else {
+        alert("Invalid login credentials.");
+      }
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const username = document.getElementById("signupUsername").value;
+      const password = document.getElementById("signupPassword").value;
+      const role = document.getElementById("signupRole").value;
+
+      if (accounts.some(acc => acc.username === username)) {
+        alert("Username already exists!");
+        return;
+      }
+
+      accounts.push({ username, password, role });
+      saveAccounts();
+      alert("Account created successfully!");
+      flipForm();
+    });
+
+    document.getElementById("forgotForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const username = document.getElementById("forgotUsername").value;
+      const newPassword = document.getElementById("newPassword").value;
+
+      const userIndex = accounts.findIndex(acc => acc.username === username);
+      if (userIndex === -1) {
+        alert("Username not found.");
+        return;
+      }
+
+      accounts[userIndex].password = newPassword;
+      saveAccounts();
+      alert("Password reset successfully!");
+
+      document.getElementById("forgotForm").reset();
+      const modal = bootstrap.Modal.getInstance(document.getElementById("forgotModal"));
+      modal.hide();
+    });
+  </script>
+</body>
+</html>

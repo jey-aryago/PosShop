@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Orders</title>
+  <link rel="icon" href="favicon.png" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --dark-bg: #0a0b0e;
+      --dark-secondary: #1a1c20;
+      --light-accent: #ffffff;
+      --primary-color: #4f46e5;
+      --secondary-color: #818cf8;
+      --success-color: #22c55e;
+      --card-bg: rgba(26, 28, 32, 0.95);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--dark-bg);
+      color: var(--light-accent);
+      overflow-x: hidden;
+      position: relative;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    /* Enhanced Navigation Container */
+    .nav-container {
+      background: linear-gradient(to right, rgba(26, 28, 32, 0.95), rgba(31, 33, 37, 0.95));
+      margin: 20px;
+      border-radius: 20px;
+      padding: 5px;
+      box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-inner {
+      background: rgba(20, 22, 25, 0.5);
+      border-radius: 15px;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Enhanced Logo Styles */
+    .site-logo {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--light-accent);
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .site-logo:hover {
+      color: var(--light-accent);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-icon::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        transform: translateX(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(45deg);
+      }
+    }
+
+    /* Enhanced Navigation Links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-links li {
+      margin: 0;
+      position: relative;
+    }
+
+    .nav-links a {
+      color: var(--light-accent);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-links a:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: rgba(79, 70, 229, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(129, 140, 248, 0.1));
+      border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .nav-links i {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-links a:hover i {
+      transform: scale(1.1);
+    }
+
+    /* Enhanced Account Button */
+    .account-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--light-accent);
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .account-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+      );
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .account-btn:hover::before {
+      transform: translateX(100%);
+    }
+
+    .account-btn:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: rgba(79, 70, 229, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Dropdown Menu Styles */
+    .dropdown-menu {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 8px;
+      min-width: 200px;
+    }
+
+    .dropdown-item {
+      color: var(--light-accent);
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--light-accent);
+    }
+
+    .dropdown-item i {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+
+    .dropdown-item:hover i {
+      color: var(--secondary-color);
+    }
+
+    .dropdown-toggle::after {
+      display: none;
+    }
+
+    /* Enhanced Order Cards */
+    .order-card {
+      border-radius: 15px;
+      background: var(--card-bg);
+      padding: 25px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(79, 70, 229, 0.2);
+    }
+
+    .order-card img {
+      max-width: 100px;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .order-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .order-details {
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .total-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--success-color);
+      background: linear-gradient(135deg, var(--success-color), #4ade80);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-top: 15px;
+    }
+
+    /* Enhanced Buttons */
+    .btn-checkout {
+      background: linear-gradient(135deg, var(--success-color), #4ade80);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 25px;
+    }
+
+    .btn-checkout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+    }
+
+    /* Order Item Styles */
+    .order-item {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .order-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Delete Button Styles */
+    .btn-delete {
+      background: rgba(220, 38, 38, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(220, 38, 38, 0.2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-delete:hover {
+      background: rgba(220, 38, 38, 0.2);
+      border-color: rgba(220, 38, 38, 0.3);
+      transform: translateY(-2px);
+      color: #ef4444;
+    }
+
+    .btn-delete i {
+      font-size: 0.9rem;
+    }
+
+    /* Delete Confirmation Modal */
+    .modal-content {
+      background: var(--dark-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-confirm-delete {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-confirm-delete:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .order-id {
+      color: var(--primary-color);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .order-date {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+
+    /* Cart Count Badge */
+    .cart-count {
+      background: var(--primary-color);
+      color: white;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 50%;
+      margin-left: 5px;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      border: 2px solid var(--dark-bg);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+      }
+    }
+    /* Responsive Styles */
+
+/* Mobile (default or max-width: 768px) */
+@media (max-width: 768px) {
+  .nav-inner {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .content-card {
+    margin: 10px;
+    padding: 20px;
+  }
+}
+
+/* Android Tablets (typically 768px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .nav-inner {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .nav-links {
+    flex-wrap: nowrap;
+    justify-content: space-around;
+  }
+
+  .content-card {
+    margin: 15px;
+    padding: 25px;
+  }
+}
+
+/* PC / Desktop (1025px and up) */
+@media (min-width: 1025px) {
+  .nav-inner {
+    flex-direction: row;
+    gap: 30px;
+  }
+
+  .nav-links {
+    justify-content: flex-end;
+  }
+
+  .content-card {
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 1200px;
+  }
+}
+
+    /* Add styles for cart items */
+    .cart-items-container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cart-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .cart-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .cart-item-details {
+      flex-grow: 1;
+    }
+
+    .cart-item-title {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      color: var(--light-accent);
+    }
+
+    .cart-item-price {
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    .quantity-btn {
+      background: none;
+      border: none;
+      color: var(--light-accent);
+      cursor: pointer;
+      padding: 0 5px;
+      transition: all 0.3s ease;
+    }
+
+    .quantity-btn:hover {
+      color: var(--primary-color);
+    }
+
+    .cart-summary {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      color: var(--light-accent);
+      margin-bottom: 15px;
+    }
+
+    /* Checkout Button Styles */
+    .btn-checkout {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .btn-checkout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-checkout:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-checkout i {
+      font-size: 1.2rem;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .empty-cart i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+    }
+
+    /* Order Badge Styles */
+    .order-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 12px;
+      margin-left: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: badgePulse 2s infinite;
+    }
+
+    .order-badge::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: badgeShine 3s infinite;
+    }
+
+    @keyframes badgePulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+      }
+    }
+
+    @keyframes badgeShine {
+      0% {
+        transform: translateX(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(45deg);
+      }
+    }
+
+    /* Cart Navigation Badge */
+    .cart-nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      font-size: 0.8rem;
+      font-weight: bold;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 10px;
+      margin-left: 8px;
+      position: relative;
+      overflow: hidden;
+      animation: navBadgePulse 2s infinite;
+    }
+
+    .cart-nav-badge::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: navBadgeShine 3s infinite;
+    }
+
+    @keyframes navBadgePulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(79, 70, 229, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+      }
+    }
+
+    @keyframes navBadgeShine {
+      0% {
+        transform: translateX(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(45deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h2 class="mb-4">Cart Items</h2>
+
+    <div class="nav-container">
+      <div class="nav-inner">
+        <a href="user-dashboard.html" class="site-logo">
+          <div class="logo-icon">
+            <i class="bi bi-bag-heart-fill"></i>
+          </div>
+          <span>PosShop</span>
+        </a>
+        
+        <ul class="nav-links">
+          <li><a href="user-dashboard.html"><i class="bi bi-house"></i> Dashboard</a></li>
+          <li><a href="user-view-products.html"><i class="bi bi-grid"></i> Products</a></li>
+          <li><a href="user-view-orders.html" class="active"><i class="bi bi-bag"></i> Cart</a></li>
+          <li>
+      <div class="dropdown">
+              <button class="account-btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+          Account
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="user-profile.html"><i class="bi bi-person"></i> Profile</a></li>
+          <li><a class="dropdown-item" href="login.html"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Cart Items Section -->
+    <div class="cart-items-container mt-4">
+      <div id="cartItems">
+        <!-- Cart items will be displayed here -->
+      </div>
+      <div class="cart-summary mt-4" id="cartSummary">
+        <!-- Cart summary will be displayed here -->
+      </div>
+    </div>
+
+    <h3 class="mt-5 mb-4">Order History</h3>
+    <div id="orderList">
+      <!-- Past orders will be injected here -->
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+
+    const orderList = document.getElementById('orderList');
+    const cartItems = document.getElementById('cartItems');
+    const cartSummary = document.getElementById('cartSummary');
+
+    function displayCartItems() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      
+      if (cart.length === 0) {
+        cartItems.innerHTML = `
+          <div class="empty-cart">
+            <i class="bi bi-cart-x"></i>
+            <h4>Your cart is empty</h4>
+            <p>Add some products to your cart</p>
+          </div>
+        `;
+        cartSummary.innerHTML = '';
+        return;
+      }
+
+      let total = 0;
+      cartItems.innerHTML = cart.map(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        return `
+          <div class="cart-item animate__animated animate__fadeIn">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-details">
+              <div class="cart-item-title">${item.name}</div>
+              <div class="cart-item-price">₱${item.price.toFixed(2)}</div>
+            </div>
+            <div class="cart-item-controls">
+              <div class="quantity-control">
+                <button class="quantity-btn" onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <span>${item.quantity}</span>
+                <button class="quantity-btn" onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+              <button class="btn btn-link text-danger" onclick="removeFromCart(${item.id})">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      cartSummary.innerHTML = `
+        <div class="cart-total">
+          <span>Total Amount:</span>
+          <span>₱${total.toFixed(2)}</span>
+        </div>
+        <button class="btn-checkout" onclick="processCheckout()" ${cart.length === 0 ? 'disabled' : ''}>
+          <i class="bi bi-cart-check"></i>
+          Proceed to Checkout
+        </button>
+      `;
+    }
+
+    function updateCartQuantity(id, newQuantity) {
+      if (newQuantity < 1) {
+        removeFromCart(id);
+        return;
+      }
+
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const item = cart.find(item => item.id === id);
+      if (item) {
+        item.quantity = newQuantity;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        displayCartItems();
+        updateCartCount();
+      }
+    }
+
+    function removeFromCart(id) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const newCart = cart.filter(item => item.id !== id);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      displayCartItems();
+      updateCartCount();
+    }
+
+    // Call displayCartItems when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      displayCartItems();
+      displayOrders();
+    });
+
+    function displayOrders() {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      orderList.innerHTML = '';
+
+      if (orders.length === 0) {
+        orderList.innerHTML = `
+          <div class="empty-state">
+            <i class="bi bi-bag-x"></i>
+            <h4>No Orders Yet</h4>
+            <p>Your order history will appear here once you make a purchase.</p>
+          </div>
+        `;
+        return;
+      }
+
+      orders.reverse().forEach((order, index) => {
+        const orderItems = order.items.map((item, itemIndex) => `
+          <div class="order-item d-flex justify-content-between align-items-center" data-aos="fade-up">
+            <div class="d-flex align-items-center">
+              <img src="${item.image}" alt="${item.name}" class="me-3 rounded">
+              <div>
+                <h6 class="mb-1">${item.name}</h6>
+                <p class="mb-0">Qty: ${item.quantity} | Price: ₱${parseFloat(item.price).toFixed(2)}</p>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <h6 class="mb-0">₱${(parseFloat(item.price) * item.quantity).toFixed(2)}</h6>
+              <button class="btn btn-delete" onclick="deleteItem('${order.orderId}', ${itemIndex})">
+                <i class="bi bi-trash3"></i>
+                Delete
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        orderList.innerHTML += `
+          <div class="order-card" data-aos="fade-up" data-aos-delay="${index * 100}">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <div class="order-id">Order #${order.orderId}</div>
+                <div class="order-badge">
+                  <i class="bi bi-box-seam me-1"></i>
+                  ${order.items.length} ${order.items.length === 1 ? 'item' : 'items'}
+                </div>
+              </div>
+              <div class="order-date">${order.date}</div>
+            </div>
+            <div class="order-details">
+              ${orderItems}
+            </div>
+            <h4 class="total-price">Order Total: ₱${parseFloat(order.totalPrice).toFixed(2)}</h4>
+          </div>
+        `;
+      });
+    }
+
+    function deleteItem(orderId, itemIndex) {
+      if (confirm('Are you sure you want to delete this item?')) {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const orderIndex = orders.findIndex(order => order.orderId == orderId);
+        
+        if (orderIndex !== -1) {
+          const order = orders[orderIndex];
+          
+          // Remove the item
+          order.items.splice(itemIndex, 1);
+          
+          // Recalculate total price
+          order.totalPrice = order.items.reduce((sum, item) => 
+            sum + (parseFloat(item.price) * item.quantity), 0
+          );
+          
+          // If no items left, remove the entire order
+          if (order.items.length === 0) {
+            orders.splice(orderIndex, 1);
+          }
+          
+          localStorage.setItem('orders', JSON.stringify(orders));
+          displayOrders();
+        }
+      }
+    }
+
+    // Function to update cart count in navigation
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const cartLink = document.querySelector('a[href="user-view-orders.html"]');
+      
+      if (total > 0) {
+        cartLink.innerHTML = `
+          <i class="bi bi-bag"></i> 
+          Cart 
+          <span class="cart-nav-badge">${total}</span>
+        `;
+      } else {
+        cartLink.innerHTML = `<i class="bi bi-bag"></i> Cart`;
+      }
+    }
+
+    function processCheckout() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      if (cart.length === 0) return;
+
+      // Create a new order
+      const order = {
+        orderId: Date.now().toString(),
+        date: new Date().toLocaleDateString(),
+        items: [...cart],
+        totalPrice: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      };
+
+      // Add to orders
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      orders.push(order);
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Clear cart
+      localStorage.setItem('cart', JSON.stringify([]));
+
+      // Update display
+      displayCartItems();
+        displayOrders();
+      updateCartCount();
+
+      // Show success message
+      alert('Order placed successfully!');
+    }
+  </script>
+</body>
+</html>

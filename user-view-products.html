@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Products</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.png"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --dark-bg: #0a0b0e;
+      --dark-secondary: #1a1c20;
+      --light-accent: #ffffff;
+      --primary-color: #4f46e5;
+      --secondary-color: #818cf8;
+      --success-color: #22c55e;
+      --card-bg: rgba(26, 28, 32, 0.95);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--dark-bg);
+      color: var(--light-accent);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Background Elements */
+    .background-animations {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .floating-icon {
+      position: absolute;
+      opacity: 0.15;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+      animation: float 15s linear infinite;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(-100%, -100%) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.1;
+      }
+      90% {
+        opacity: 0.1;
+      }
+      100% {
+        transform: translate(200%, 200%) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Dynamic Grid Background */
+    .grid {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes gridMove {
+      0% {
+        transform: translate(0, 0);
+      }
+      100% {
+        transform: translate(-50px, -50px);
+      }
+    }
+
+    /* Glowing Orbs */
+    .orb {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(150px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .orb-1 {
+      background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+      top: -200px;
+      left: -200px;
+    }
+
+    .orb-2 {
+      background: radial-gradient(circle, var(--secondary-color) 0%, transparent 70%);
+      bottom: -200px;
+      right: -200px;
+    }
+
+    /* Shooting Stars Effect */
+    .shooting-star {
+      position: absolute;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.7), transparent);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      animation: shootingStar 3s linear infinite;
+    }
+
+    @keyframes shootingStar {
+      0% {
+        transform: translateX(-100%) translateY(0) rotate(-45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(200%) translateY(300%) rotate(-45deg);
+        opacity: 0;
+      }
+    }
+
+    /* Product Cards */
+    .product-card {
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-card:hover {
+      transform: translateY(-10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card img {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      filter: brightness(0.9);
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover img {
+      filter: brightness(1.1);
+    }
+
+    .product-card .card-body {
+      color: var(--light-accent);
+    }
+
+    .product-card .card-title {
+      color: var(--light-accent);
+      font-weight: 600;
+    }
+
+    .rating i {
+      color: #ffd700;
+      filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+    }
+
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      color: var(--light-accent);
+    }
+
+    .cart-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: var(--primary-color);
+      border: 2px solid var(--dark-bg);
+      color: white;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+      }
+    }
+
+    /* Enhanced Navigation Container */
+    .nav-container {
+      background: linear-gradient(to right, rgba(26, 28, 32, 0.95), rgba(31, 33, 37, 0.95));
+      margin: 20px;
+      border-radius: 20px;
+      padding: 5px;
+      box-shadow: 
+        0 4px 30px rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-inner {
+      background: rgba(20, 22, 25, 0.5);
+      border-radius: 15px;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Enhanced Logo Styles */
+    .site-logo {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--light-accent);
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .site-logo:hover {
+      color: var(--light-accent);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-icon::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        transform: translateX(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) rotate(45deg);
+      }
+    }
+
+    /* Enhanced Navigation Links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-links li {
+      margin: 0;
+      position: relative;
+    }
+
+    .nav-links a {
+      color: var(--light-accent);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-links a:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: rgba(79, 70, 229, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(129, 140, 248, 0.1));
+      border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .nav-links i {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-links a:hover i {
+      transform: scale(1.1);
+    }
+
+    /* Enhanced Account Button */
+    .account-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--light-accent);
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .account-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+      );
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .account-btn:hover::before {
+      transform: translateX(100%);
+    }
+
+    .account-btn:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: rgba(79, 70, 229, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Dropdown Menu Styles */
+    .dropdown-menu {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 8px;
+      min-width: 200px;
+    }
+
+    .dropdown-item {
+      color: var(--light-accent);
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--light-accent);
+    }
+
+    .dropdown-item i {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+
+    .dropdown-item:hover i {
+      color: var(--secondary-color);
+    }
+
+    .dropdown-toggle::after {
+      display: none;
+    }
+
+    /* Update container padding for better header space */
+    .container {
+      padding-top: 2rem;
+    }
+
+    /* Modal Enhancements */
+    .modal-content {
+      background: var(--dark-secondary);
+      color: var(--light-accent);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal.fade .modal-dialog {
+      transition: transform 0.3s ease-out;
+    }
+
+    .modal.show .modal-dialog {
+      transform: none;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Product Card Content Animation */
+    .card-body {
+      transform: translateY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .card-body {
+      transform: translateY(-5px);
+    }
+
+    /* Price Tag Style */
+    .price-tag {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      display: inline-block;
+      margin: 10px 0;
+      font-weight: bold;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+    }
+
+    .product-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .product-card:hover .product-overlay {
+      opacity: 1;
+    }
+
+    .badge {
+      transition: all 0.3s ease;
+    }
+
+    .toast {
+      background: transparent;
+    }
+
+    .toast-body {
+      padding: 1rem;
+    }
+
+    .btn-light {
+      backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .btn-light:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.05);
+    }
+    /* Responsive Styles */
+
+/* Mobile (default or max-width: 768px) */
+@media (max-width: 768px) {
+  .nav-inner {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .content-card {
+    margin: 10px;
+    padding: 20px;
+  }
+}
+
+/* Android Tablets (typically 768px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .nav-inner {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .nav-links {
+    flex-wrap: nowrap;
+    justify-content: space-around;
+  }
+
+  .content-card {
+    margin: 15px;
+    padding: 25px;
+  }
+}
+
+/* PC / Desktop (1025px and up) */
+@media (min-width: 1025px) {
+  .nav-inner {
+    flex-direction: row;
+    gap: 30px;
+  }
+
+  .nav-links {
+    justify-content: flex-end;
+  }
+
+  .content-card {
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 1200px;
+  }
+}
+
+
+    /* Add new styles for the modal */
+    .modal-content {
+      background: var(--dark-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--light-accent);
+    }
+
+    .product-image-container {
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .product-image-container img {
+      width: 100%;
+      height: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .product-image-container:hover img {
+      transform: scale(1.05);
+    }
+
+    .quantity-selector .form-control {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--light-accent);
+    }
+
+    .quantity-selector .btn-outline-light {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .quantity-selector .btn-outline-light:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #modalQuantity {
+      width: 80px;
+    }
+
+    .modal .rating {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Animation Elements -->
+  <div class="background-animations">
+    <div class="grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <!-- Shooting stars will be added dynamically -->
+  </div>
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>View Products</h2>
+    </div>
+     
+    <div class="nav-container">
+      <div class="nav-inner">
+        <a href="user-dashboard.html" class="site-logo">
+          <div class="logo-icon">
+            <i class="bi bi-bag-heart-fill"></i>
+          </div>
+          <span>PosShop</span>
+        </a>
+        
+        <ul class="nav-links">
+          <li><a href="user-dashboard.html"><i class="bi bi-house"></i> Dashboard</a></li>
+          <li><a href="user-view-products.html" class="active"><i class="bi bi-grid"></i> Products</a></li>
+          <li><a href="user-view-orders.html"><i class="bi bi-bag"></i> Cart</a></li>
+          <li>
+            <div class="dropdown">
+              <button class="account-btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+                Account
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="user-profile.html"><i class="bi bi-person"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="login.html"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row g-4" id="productList">
+      <!-- Products will be injected here -->
+    </div>
+  </div>
+
+  <!-- Product Details Modal -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom border-light/10">
+          <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="product-image-container">
+                <img id="modalProductImage" src="" alt="" class="img-fluid rounded">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h4 id="modalProductName" class="mb-3"></h4>
+              <p id="modalProductDescription" class="mb-3"></p>
+              <div class="rating mb-3" id="modalProductRating"></div>
+              <div class="price-tag mb-4" id="modalProductPrice"></div>
+              <div class="quantity-selector mb-4">
+                <label for="modalQuantity" class="form-label">Quantity:</label>
+                <div class="input-group">
+                  <button class="btn btn-outline-light" type="button" onclick="updateModalQuantity(-1)">
+                    <i class="bi bi-dash"></i>
+                  </button>
+                  <input type="number" class="form-control text-center" id="modalQuantity" value="1" min="1">
+                  <button class="btn btn-outline-light" type="button" onclick="updateModalQuantity(1)">
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+              </div>
+              <button class="btn btn-primary w-100" id="modalAddToCart">
+                <i class="bi bi-cart-plus"></i> Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cartModalLabel">Shopping Cart</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cartItems" class="list-group">
+            <!-- Cart items will appear here -->
+          </div>
+          <div class="text-end mt-3 fw-bold" id="cartTotal">Total: ₱0</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="checkoutBtn">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize background animations
+    function initBackgroundAnimations() {
+      const backgroundAnimations = document.querySelector('.background-animations');
+
+      // Add shooting stars
+      setInterval(() => {
+        const star = document.createElement('div');
+        star.className = 'shooting-star';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.left = Math.random() * 100 + 'vw';
+        backgroundAnimations.appendChild(star);
+        
+        // Remove the star after animation
+        setTimeout(() => {
+          star.remove();
+        }, 3000);
+      }, 2000);
+    }
+
+    // Initialize AOS
+    AOS.init();
+
+    const products = [
+      { id: 1, name: 'cdo-Chicken-Tocino', image: 'cdo-Chicken-Tocino.jpg', rating: 3.5, price: 150, description: 'Delicious chicken tocino.' },
+      { id: 2, name: 'cdo-chili-Tocino', image: 'cdo-chili-Tocino.jpg', rating: 4, price: 160, description: 'Spicy chicken tocino.' },
+      { id: 3, name: 'cdo-Pork-Longganisa', image: 'cdo-Pork-Longganisa.jpg', rating: 2.5, price: 180, description: 'Juicy pork longganisa.' },
+      { id: 4, name: 'cdo-young-Pork-Tocino-Fatless', image: 'cdo-young-Pork-Tocino-Fatless.jpg', rating: 3.5, price: 170, description: 'Fatless pork tocino.' },
+      { id: 5, name: 'cdo-young-Pork-Tocino', image: 'cdo-young-Pork-Tocino.jpg', rating: 5, price: 200, description: 'Tender young pork tocino.' },
+      { id: 6, name: 'cdo-Pork-Tocino', image: 'cdo-Pork-Tocino.jpg', rating: 5, price: 200, description: 'Tender young pork tocino.' },
+      { id: 7, name: 'cdo-young-Pork-Tocino', image: '', rating: 5, price: 200, description: 'Tender young pork tocino.' }
+
+    ];
+
+    const productList = document.getElementById('productList');
+    const cartCount = document.getElementById('cartCount');
+    const cartItems = document.getElementById('cartItems');
+    const cartIcon = document.getElementById('cartIcon');
+    const cartTotal = document.getElementById('cartTotal');
+    let currentProductId = null;
+
+    function displayProducts() {
+      productList.innerHTML = '';
+      products.forEach((product, index) => {
+        productList.innerHTML += `
+          <div class="col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="${index * 100}">
+            <div class="card product-card animate__animated animate__fadeIn" data-product-id="${product.id}">
+              <div class="overflow-hidden position-relative">
+                <img src="${product.image}" class="card-img-top" alt="Image of ${product.name}" onclick="showProductModal(${product.id})">
+                <div class="product-overlay">
+                  <div class="d-flex justify-content-center align-items-center h-100">
+                    <button class="btn btn-light btn-sm" onclick="showProductModal(${product.id})">
+                      <i class="bi bi-eye"></i> Quick View
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body text-center">
+                <h5 class="card-title">${product.name}</h5>
+                <p class="card-text">${product.description}</p>
+                <div class="price-tag">₱${product.price}</div>
+                <div class="rating mb-2">${getStars(product.rating)}</div>
+                <button class="btn btn-primary animate__animated animate__pulse" onclick="showProductModal(${product.id})">
+                  <i class="bi bi-cart-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function getStars(rating) {
+      const fullStars = Math.floor(rating);
+      const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+      return `${'<i class="bi bi-star-fill"></i>'.repeat(fullStars)}${halfStar ? '<i class="bi bi-star-half"></i>' : ''}`;
+    }
+
+    function showProductModal(productId) {
+      const product = products.find(p => p.id === productId);
+      currentProductId = productId;
+
+      // Update modal content
+      document.getElementById('modalProductImage').src = product.image;
+      document.getElementById('modalProductImage').alt = product.name;
+      document.getElementById('modalProductName').textContent = product.name;
+      document.getElementById('modalProductDescription').textContent = product.description;
+      document.getElementById('modalProductRating').innerHTML = getStars(product.rating);
+      document.getElementById('modalProductPrice').textContent = `₱${product.price}`;
+      document.getElementById('modalQuantity').value = 1;
+
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('productModal'));
+      modal.show();
+    }
+
+    function updateModalQuantity(change) {
+      const quantityInput = document.getElementById('modalQuantity');
+      const newValue = parseInt(quantityInput.value) + change;
+      if (newValue >= 1) {
+        quantityInput.value = newValue;
+      }
+    }
+
+    // Update modal add to cart button handler
+    document.getElementById('modalAddToCart').addEventListener('click', function() {
+      const quantity = parseInt(document.getElementById('modalQuantity').value);
+      if (quantity < 1 || isNaN(quantity)) {
+        alert('Please enter a valid quantity.');
+        return;
+      }
+      addToCart(currentProductId, quantity);
+      const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+      modal.hide();
+    });
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      
+      // Update cart count in the navigation menu with animation
+      const cartLink = document.querySelector('a[href="user-view-orders.html"]');
+      cartLink.innerHTML = `
+        <i class="bi bi-bag"></i> Cart 
+        <span class="badge bg-primary rounded-pill animate__animated animate__bounceIn">${total}</span>
+      `;
+    }
+
+    function addToCart(id, quantity) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const product = products.find(p => p.id === id);
+      const existing = cart.find(item => item.id === id);
+
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        cart.push({ ...product, quantity });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      const productCard = document.querySelector(`[data-product-id="${id}"]`);
+      productCard.classList.add('animate__animated', 'animate__pulse');
+      
+      productCard.addEventListener('animationend', () => {
+        productCard.classList.remove('animate__animated', 'animate__pulse');
+      });
+
+      updateCartCount();
+      
+      // Show success toast
+      const toast = document.createElement('div');
+      toast.className = 'position-fixed bottom-0 end-0 p-3';
+      toast.style.zIndex = '11';
+      toast.innerHTML = `
+        <div class="toast align-items-center border-0 animate__animated animate__fadeInUp" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex bg-success text-white rounded">
+            <div class="toast-body d-flex align-items-center">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              <div>
+                <strong>${product.name}</strong> added to cart!
+                <div class="small">Quantity: ${quantity}</div>
+              </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      const toastEl = new bootstrap.Toast(toast.querySelector('.toast'), {
+        delay: 3000
+      });
+      toastEl.show();
+      
+      toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+      });
+    }
+
+    function displayCartItems() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cartItems.innerHTML = '';
+      cart.forEach(item => {
+        cartItems.innerHTML += `
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <span>${item.name} x${item.quantity}</span>
+              <button class="btn btn-danger btn-sm" onclick="removeFromCart(${item.id})">Remove</button>
+            </div>
+          </div>
+        `;
+      });
+
+      cartTotal.textContent = `Total: ₱${calculateTotal(cart)}`;
+    }
+
+    function removeFromCart(id) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart = cart.filter(item => item.id !== id);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      displayCartItems();
+    }
+
+    function calculateTotal(cart) {
+      return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+
+    function handleCheckout() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
+
+      const total = calculateTotal(cart);
+      const confirmCheckout = confirm(`Your total is ₱${total}. Proceed to checkout?`);
+
+      if (confirmCheckout) {
+        localStorage.removeItem('cart');
+        updateCartCount();
+        cartItems.innerHTML = '<div class="text-success fw-bold">Checkout successful! Thank you for your purchase.</div>';
+        cartTotal.textContent = 'Total: ₱0';
+      }
+    }
+
+    document.getElementById('checkoutBtn').addEventListener('click', handleCheckout);
+
+    // Init
+    displayProducts();
+    updateCartCount();
+    cartIcon.addEventListener('click', displayCartItems);
+
+    // Call background animation initialization
+    document.addEventListener('DOMContentLoaded', initBackgroundAnimations);
+  </script>
+</body>
+</html>
